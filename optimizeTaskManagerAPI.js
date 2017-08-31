@@ -178,6 +178,7 @@ app.get("/login", apiLimiter, function (req, res) {
         handle_login(req, res);
 });
 app.post('/register', apiLimiter, function (req, res) {
+    UserController.register(req, res, log);
 });
 // ---------------------------------------------------------
 // route middleware to authenticate and check token

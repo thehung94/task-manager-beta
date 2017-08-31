@@ -42,8 +42,8 @@ UserModel.prototype.add = function(connection, log, callback){
     var sql = 'INSERT INTO users (username, fullname, password, address, email, phone_number,facebook_id) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?)';
     var self = this;
-    
-    connection.query(sql, [this.username, this.fullname, this.password, this.address, this.email, this.phone_number,this.facebook_id], function(err, result){
+    var params = [this.username, this.fullname, this.password, this.address, this.email, this.phone_number,this.facebook_id];
+    connection.query(sql, params, function(err, result){
         if(err){
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;

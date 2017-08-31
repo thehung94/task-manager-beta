@@ -3,10 +3,9 @@ var appLanguage = require('../messages/AppLanguage');
 var AppLanguage = new appLanguage();
 var jwt = require('jsonwebtoken');
 var config = require('../config.js');
-// enum
 var AppEnum = require('../util/AppEnums');
-// models
 var UserModel = require('../model/UserModel');
+var TextHelper = require('../util/helpers/TextHelper');
 
 UserController.activeUser = function(req, res, log){
     req.getConnection(function(err, connection){
@@ -146,4 +145,49 @@ UserController.isActive = function(p_user_id, req, log){
     });
 };
 
+UserController.register = function(req, res, log){
+    log.info("UserController --> register :" + TextHelper.parramToString(req.body));
+    var resResult = { code : 0, message : AppLanguage.t("app", "success")};
+    req.getConnection(function(err, connection){
+        if (err){
+            resResult.code = 0;
+            resResult.message = AppLanguage.t("app", "Connection error");
+            res.json(resResult);
+            log.error("UserController --> register :" + " Connection error");
+            return false;
+        }
+        try {
+            var username = req.body.username;
+            var password = req.body.username;
+            var email = req.body.username;
+            var phone = req.body.username;
+            if (!username || !password || !email || !phone ) {
+                resResult.code = 102;
+                resResult.message = AppLanguage.t("app", "Parameters are invalid");
+                res.json(resResult);
+                log.error("UserController --> register :" + "Parameters are invalid");
+                return false;
+            }
+            var userModel = new UserModel(req.body);
+            userModel.add(connection, log, function(result){
+                if (result.code === 0){
+                    resResult.user = result.user;
+                    res.json(resResult);
+                }
+                else{
+                    resResult.code = 404;
+                    resResult.message = AppLanguage.t("app", "Connection error");
+                    res.json(resResult);
+                    log.error("UserController --> register :" + " Connection error");
+                    return false;
+                }
+            });
+            
+        }
+        catch(e){
+            log.error("UserController --> register Exception :" + " Connection error");
+            return false;
+        }
+    });
+};
 module.exports = UserController;
