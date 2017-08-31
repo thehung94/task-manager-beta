@@ -6,6 +6,7 @@ var config = require('../config.js');
 var AppEnum = require('../util/AppEnums');
 var UserModel = require('../model/UserModel');
 var TextHelper = require('../util/helpers/TextHelper');
+var crypto = require('sha256');
 
 UserController.activeUser = function(req, res, log){
     req.getConnection(function(err, connection){
@@ -153,7 +154,7 @@ UserController.register = function(req, res, log){
             resResult.code = 0;
             resResult.message = AppLanguage.t("app", "Connection error");
             res.json(resResult);
-            log.error("UserController --> register :" + " Connection error");
+            log.error("UserController --> register --> 156 :" + " Connection error");
             return false;
         }
         try {
@@ -165,10 +166,11 @@ UserController.register = function(req, res, log){
                 resResult.code = 102;
                 resResult.message = AppLanguage.t("app", "Parameters are invalid");
                 res.json(resResult);
-                log.error("UserController --> register :" + "Parameters are invalid");
+                log.error("UserController --> register --> 168 :" + "Parameters are invalid");
                 return false;
             }
             var userModel = new UserModel(req.body);
+            userModel.password = crypto(req.body.password);
             userModel.add(connection, log, function(result){
                 if (result.code === 0){
                     resResult.user = result.user;
@@ -178,13 +180,14 @@ UserController.register = function(req, res, log){
                     resResult.code = 404;
                     resResult.message = AppLanguage.t("app", "Connection error");
                     res.json(resResult);
-                    log.error("UserController --> register :" + " Connection error");
+                    log.error("UserController --> register --> 181 :" + " Connection error");
                     return false;
                 }
             });
             
         }
         catch(e){
+            console.log(e);
             log.error("UserController --> register Exception :" + " Connection error");
             return false;
         }

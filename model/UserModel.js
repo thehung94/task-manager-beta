@@ -13,7 +13,7 @@ UserModel.prototype.setAttributes = function(data){
     this.address = data.address ? data.address : null;
     this.email = data.email ? data.email : null;
     this.phone_number = data.phone_number ? data.phone_number : null;
-    this.facebook_id = data.facebook_id ? data.facebook_id : null;
+    //this.facebook_id = data.facebook_id ? data.facebook_id : null;
 };
 
 UserModel.prototype.getAttributes = function(){
@@ -25,7 +25,7 @@ UserModel.prototype.getAttributes = function(){
         address: this.address,
         email: this.email,
         phone_number: this.phone_number,
-        facebook_id : this.facebook_id,
+        //facebook_id : this.facebook_id,
     };
 };
 
@@ -39,12 +39,13 @@ UserModel.prototype.add = function(connection, log, callback){
         callback(validate);
         return false;
     }
-    var sql = 'INSERT INTO users (username, fullname, password, address, email, phone_number,facebook_id) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?)';
+    var sql = 'INSERT INTO users (username, fullname, password, address, email, phone_number) ' 
+            + 'VALUES (?, ?, ?, ?, ?, ?)';
     var self = this;
-    var params = [this.username, this.fullname, this.password, this.address, this.email, this.phone_number,this.facebook_id];
+    var params = [this.username, this.fullname, this.password, this.address, this.email, this.phone_number];
     connection.query(sql, params, function(err, result){
         if(err){
+            console.log(err);
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;
         }
