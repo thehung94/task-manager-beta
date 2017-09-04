@@ -139,7 +139,6 @@ function Gettoken(req, res) {
                 else {
                     console.log(result[0].icount);
                     if (result[0].icount > 0) {
-                        //bat dau get token o doan nay
                         var token = jwt.sign({ device_id: device_id }, app.get('superSecret'), {
                             expiresIn: 86400 * 365 // expires in 24*365 hours (1 year)
                         });
