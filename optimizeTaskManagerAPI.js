@@ -20,6 +20,9 @@ var appLanguage = require('./messages/AppLanguage');
 var AppLanguage = new appLanguage();
 //controller
 var UserController = require('./controller/UserController.js');
+var TaskController = require('./controller/TaskController');
+var ClassController = require('./controller/ClassController');
+var GroupController = require('./controller/GroupController');
 
 //enum
 var AppEnum = require('./util/AppEnums');
@@ -203,6 +206,38 @@ apiRoutes.use(function (req, res, next) {
             message: 'No token provided.'
         });
     }
+});
+
+apiRoutes.get('/getTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/createTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/updateTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/deleteTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/getClass', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/createClass', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/updateTask', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/deleteClass', function(req, res){
+   ClassController.getTask(req, res);
 });
 
 app.listen(config.port);

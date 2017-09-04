@@ -6,26 +6,26 @@ var TaskModel = function(data){
 
 TaskModel.prototype.setAttributes = function(data){
     this.id = data.id ? data.id : null;
-    this.task_name = data.task_name ? data.task_name : null;
-    this.user_creator_id = data.user_creator_id ? data.user_creator_id : null;
-    this.user_assigned_id = data.user_assigned_id ? data.user_assigned_id : null;
-    this.class_id = data.class_id ? data.class_id : null;
-    this.estimate_time = data.email ? data.estimate_time : null;
+    this.class_name = data.class_name ? data.class_name : null;
+    this.descriptions = data.descriptions ? data.descriptions : null;
+    this.max_participant = data.max_participant ? data.max_participant : null;
+    this.type = data.type ? data.type : null;
+    this.start_time = data.start_time ? data.start_time : null;
     this.created_time = data.created_time ? data.created_time : null;
-    this.task_content = data.task_content ? data.task_content : null;
+    this.end_time = data.end_time ? data.end_time : null;
     this.status = data.status ? data.status : null;
 };
 
 TaskModel.prototype.getAttributes = function(){
     return {
         id: this.id,
-        task_name: this.task_name   ,
-        task_content: this.task_content,
-        user_creator_id: this.user_creator_id,
-        user_assigned_id: this.user_assigned_id,
-        class_id: this.class_id,
-        estimate_time: this.estimate_time,
+        class_name: this.class_name   ,
+        descriptions: this.descriptions,
+        max_participant: this.max_participant,
+        type: this.type,
+        start_time: this.start_time,
         created_time: this.created_time,
+        end_time: this.end_time,
         status: this.status
     };
 };
@@ -35,15 +35,15 @@ TaskModel.validate = function(data){
 };
 
 TaskModel.prototype.add = function(connection, log, callback){
-    var validate = UserModel.validate(this.getAttributes());
+    var validate = this.validate(this.getAttributes());
     if(validate.code){
         callback(validate);
         return false;
     }
-    var sql = 'INSERT INTO task (task_name, task_content, user_creator_id, user_asigm_id, class_id, estimate_time, created_time, status) ' 
+    var sql = 'INSERT INTO task (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
-    var params = [this.task_name, this.task_content, this.user_creator_id, this.user_assigned_id, this.class_id, this.estimate_time, this.created_time, this.status];
+    var params = [this.class_name, this.descriptions, this.max_participant, this.type, this.start_time, this.end_time, this.created_time, this.status];
     connection.query(sql, params, function(err, result){
         if(err){
             console.log(err);
