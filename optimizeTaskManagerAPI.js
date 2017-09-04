@@ -50,58 +50,60 @@ function doLogin(req, res, connection) {
     var phone = req.query.phone;
     var email = req.query.email;
     var password = req.query.password;
-    var selectQuery = 'select * from users where password=? and ';
+    var selectQuery = 'SELECT * FROM users WHERE password = ? AND ';
     var identifier = '';
-    var error = 0;
-    if (!password) {
-        console.log('no has password');
-        error++;
-    } else {
-        if (username) {
-            selectQuery += ' username = ? ';
-            identifier = username;
-        } else if (phone) {
-            selectQuery += ' phone_number = ? ';
-            identifier = phone;
-        } else if (email) {
-            selectQuery += ' email = ? ';
-            identifier = email;
-        } else {
-            error++;
-        }
-    }
-    if (error === 0) {
-        connection.query(selectQuery, [password, identifier], function (err, result) {
-            if (err) {
-                var resResult = { "code": 100, "status": "Database error " + err };
-                log.error(JSON.stringify(resResult));
-                res.json(resResult);
-            } else {
-                if (result.length === 1) {
-                    var userModel = result[0];
-                    if(parseInt(userModel.active) === 0){
-                        var resResult = {code: 101, status: "User is inactive"};
-                        log.error(JSON.stringify(resResult));
-                        res.json(resResult);
-                        return false;
-                    }
-                    else{
-                        loginSuccessfull(result, res, connection);
-                    }
-                } else {
-                    var resResult = { "code": 101, "status": "Invalid username or password" };
-                    log.error(JSON.stringify(resResult));
-                    res.json(resResult);
-                }
-
-            }
-
-        });
-    } else {
-        var resResult = { "code": 102, "status": "API Paramaters are not enough" };
-        log.error(JSON.stringify(resResult));
+    var resResult = {
+        code : 0,
+        message : AppLanguage.t("app", "success")
+    };
+    if (!password || (!username && !email && !phone)) {
+        resResult.code = 102;
+        resResult.message = AppLanguage.t("app", "Parameters are invalid");
         res.json(resResult);
+        log.error("doLogin --> 63 : " + "Parameters are invalid");
+        return false;
     }
+    if (username) {
+        selectQuery += ' username = ? ';
+        identifier = username;
+    } else if (phone) {
+        selectQuery += ' phone_number = ? ';
+        identifier = phone;
+    } else if (email) {
+        selectQuery += ' email = ? ';
+        identifier = email;
+    }
+    
+    connection.query(selectQuery, [password, identifier], function (err, result) {
+        if (err) {
+            resResult.code= 404;
+            resResult.message = AppLanguage.t("app", "Connection error");
+            log.error("login ---> 80 :" + "Connection error");
+            res.json(resResult);
+            return false;
+        }
+        if (!result || !result.length) {
+            resResult.code = 0;
+            resResult.message = AppLanguage.t("app", "Invalid username or password");
+            log.error("login ---> 80" + "Invalid username or password" );
+            res.json(resResult);
+            return false;
+        }
+        var userModel = {
+            username : result[0].username,
+            user_id : result[0].gpoid,
+            email : result[0].email
+        };
+        var token = jwt.sign(userModel, config.superSecret, {
+            expiresIn: 86400 * 365
+        });
+        resResult.code = 0;
+        resResult.message = AppLanguage.t("app", "success");
+        resResult.user_id = result[0].gpoid;
+        resResult.token = token;
+        res.json(resResult);
+        return false;
+    });
 }
 function handle_login(req, res) {
     req.getConnection(function (err, connection) {
