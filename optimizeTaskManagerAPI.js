@@ -212,7 +212,7 @@ apiRoutes.get('/getTask', function(req, res){
    TaskController.getTask(req, res);
 });
 
-apiRoutes.get('/createTask', function(req, res){
+apiRoutes.post('/createTask', function(req, res){
    TaskController.getTask(req, res);
 });
 
