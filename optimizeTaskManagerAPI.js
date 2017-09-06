@@ -20,10 +20,11 @@ var appLanguage = require('./messages/AppLanguage');
 var AppLanguage = new appLanguage();
 //controller
 var UserController = require('./controller/UserController.js');
+var TaskController = require('./controller/TaskController');
 
 //enum
 var AppEnum = require('./util/AppEnums');
-var myConnection = require('express-myconnection'); // express-myconnection module
+var myConnection = require('express-myconnection');
 
 app.use(myConnection(mysql, config.dbOptions, 'pool'));
 /**
