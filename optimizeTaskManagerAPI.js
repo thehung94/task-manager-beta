@@ -21,6 +21,8 @@ var AppLanguage = new appLanguage();
 //controller
 var UserController = require('./controller/UserController.js');
 var TaskController = require('./controller/TaskController');
+var ClassController = require('./controller/ClassController');
+var GroupController = require('./controller/GroupController');
 
 //enum
 var AppEnum = require('./util/AppEnums');
@@ -44,7 +46,7 @@ app.use(myConnection(mysql, config.dbOptions, 'pool'));
  * @apiSuccess {String} token Token generated for client
  *
  * @apiExample {get} Example request
- * http://cp.cam9.tv:3000/login?action=login&password=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918&email=tungnd@vp9.tv
+ * http://localhost:3000/login?action=login&password=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918&email=tungnd@vp9.tv
  */
 function doLogin(req, res, connection) {
     var username = req.query.username;
@@ -124,46 +126,6 @@ function handle_login(req, res) {
         }
     });
 }
-function Gettoken(req, res) {
-    req.getConnection(function (err, connection) {
-        if (err) {
-            res.json({ "code": 100, "status": "Database error " + err });
-            return;
-        }
-        else {
-            var device_id = req.param('device_id');
-            //kiem tra xem device_id co ton tai khong neu khong thi bao loi
-            var mysqlQuery = "select count(*)icount,(select ss.`owner` from sites ss where ss.id = s.site_id)site_name from servers s where device_id=?";
-            connection.query(mysqlQuery, [device_id], function (err, result) {
-                if (err) {
-                    res.json({ "code": 100, "status": "Error in connection database" });
-                    console.log(err);
-                }
-                else {
-                    console.log(result[0].icount);
-                    if (result[0].icount > 0) {
-                        //bat dau get token o doan nay
-                        var token = jwt.sign({ device_id: device_id }, app.get('superSecret'), {
-                            expiresIn: 86400 * 365 // expires in 24*365 hours (1 year)
-                        });
-                        res.json({
-                            code: 0,
-                            message: 'Enjoy your token!',
-                            device_id: device_id,
-                            site_name: result[0].site_name,
-                            token: token
-                        });
-                    }
-                    else {
-                        res.json({ "code": 102, "status": "Not found device_id" });
-                        console.log(err);
-                    }
-                }
-            });
-        }
-
-    });
-}
 
 var apiLimiter = new RateLimit({
     windowsMs: 1 * 60 * 1000,
@@ -205,6 +167,38 @@ apiRoutes.use(function (req, res, next) {
             message: 'No token provided.'
         });
     }
+});
+
+apiRoutes.get('/getTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/createTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/updateTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/deleteTask', function(req, res){
+   TaskController.getTask(req, res);
+});
+
+apiRoutes.get('/getClass', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/createClass', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/updateTask', function(req, res){
+   ClassController.getClass(req, res);
+});
+
+apiRoutes.get('/deleteClass', function(req, res){
+   ClassController.getTask(req, res);
 });
 
 app.listen(config.port);

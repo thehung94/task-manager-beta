@@ -10,7 +10,7 @@ TaskModel.prototype.setAttributes = function(data){
     this.user_creator_id = data.user_creator_id ? data.user_creator_id : null;
     this.user_assigned_id = data.user_assigned_id ? data.user_assigned_id : null;
     this.class_id = data.class_id ? data.class_id : null;
-    this.estimate_time = data.email ? data.estimate_time : null;
+    this.estimate_time = data.estimate_time ? data.estimate_time : null;
     this.created_time = data.created_time ? data.created_time : null;
     this.task_content = data.task_content ? data.task_content : null;
     this.status = data.status ? data.status : null;
@@ -35,7 +35,7 @@ TaskModel.validate = function(data){
 };
 
 TaskModel.prototype.add = function(connection, log, callback){
-    var validate = UserModel.validate(this.getAttributes());
+    var validate = this.validate(this.getAttributes());
     if(validate.code){
         callback(validate);
         return false;
