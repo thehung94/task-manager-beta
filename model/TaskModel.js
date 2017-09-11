@@ -34,7 +34,7 @@ TaskModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-TaskModel.prototype.add = function(connection, log, callback){
+TaskModel.prototype.add = function(connection, callback){
     var validate = this.validate(this.getAttributes());
     if(validate.code){
         callback(validate);
@@ -51,7 +51,7 @@ TaskModel.prototype.add = function(connection, log, callback){
             return false;
         }
         self.id = result.insertId;
-        callback({code: 0, message: '', taks: self});
+        callback({code: 0, message: '', task: self});
     });
 };
 
@@ -60,6 +60,28 @@ TaskModel.prototype.getOneByAttributes = function(attribute, value, connection, 
                 + attribute
                 + " = ? LIMIT 1";
     connection.query(sqlQuery, [value], function(err, result){
+        if (err){
+            callback({
+                code : 404,
+                message : ''
+            });
+            return false;
+        }
+        callback({
+            code : 0,
+            message : '',
+            data : result
+        });
+    });
+};
+TaskModel.getAllTaskByUser = function(userId, connection, callback){
+    var sqlQuery = " SELECT * FROM task t" +
+                " LEFT JOIN user2class u2c ON u2c.user_id = t.user_creator_id OR u2c.user_id = t.user_asigm_id " +
+                " LEFT JOIN user2group u2g ON u2g.user_id = t.user_creator_id OR u2g.user_id = t.user_asigm_id " +
+                " LEFT JOIN class c ON  u2c.class_id = c.id " +
+                " LEFT JOIN group g ON g.id = u2g.group_id " +
+                " WHERE user_id = ?";
+    connection.query(sqlQuery, [userId], function(err, connection){
         if (err){
             callback({
                 code : 404,
