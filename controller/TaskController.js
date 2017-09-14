@@ -3,8 +3,10 @@ var appLanguage = require('../messages/AppLanguage');
 var TaskModel = require('../model/TaskModel');
 var UserModel = require('../model/UserModel');
 var AppLanguage = new appLanguage();
+var TextHelper = require('../util/helpers/TextHelper');
 TaskController.createTask = function(req, res, log){
     var resResult = {code : 0, status: "OK", message: AppLanguage.t("app", "success")};
+    log.info("TaskController --> createTask :" + TextHelper.parramToString(req.bpdy));
     req.getConnection(function(err, connection){
         if (err) {
             resResult.code = 404;

@@ -31,96 +31,7 @@ var AppEnum = require('./util/AppEnums');
 var myConnection = require('express-myconnection');
 
 app.use(myConnection(mysql, config.dbOptions, 'pool'));
-/**
- * @api {get} cp.cam9.tv:3000/login 3.1 Authenticate user in mobile app
- * @apiName doLogin
- * @apiGroup CMS API
- *
- * @apiParam {String} action Type of action, fix value "login"
- * @apiParam {String} password A SHA265 string from user's password
- * @apiParam {String} email Email
- * @apiParam {String} phone Phone number
- * @apiParam {String} username Username
- * @apiDescription Param email, phone and username are options, but have to one of them.
- *
- * @apiSuccess {String} success True
- * @apiSuccess {String} message Enjoy your token!
- * @apiSuccess {String} token Token generated for client
- *
- * @apiExample {get} Example request
- * http://localhost:3000/login?action=login&password=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918&email=tungnd@vp9.tv
- */
-function doLogin(req, res, connection) {
-    var username = req.query.username;
-    var phone = req.query.phone;
-    var email = req.query.email;
-    var password = req.query.password;
-    var selectQuery = 'SELECT * FROM users WHERE password = ? AND ';
-    var identifier = '';
-    var resResult = {
-        code : 0,
-        message : AppLanguage.t("app", "success")
-    };
-    if (!password || (!username && !email && !phone)) {
-        resResult.code = 102;
-        resResult.message = AppLanguage.t("app", "Parameters are invalid");
-        res.json(resResult);
-        log.error("doLogin --> 63 : " + "Parameters are invalid");
-        return false;
-    }
-    if (username) {
-        selectQuery += ' username = ? ';
-        identifier = username;
-    } else if (phone) {
-        selectQuery += ' phone_number = ? ';
-        identifier = phone;
-    } else if (email) {
-        selectQuery += ' email = ? ';
-        identifier = email;
-    }
-    
-    connection.query(selectQuery, [password, identifier], function (err, result) {
-        if (err) {
-            resResult.code= 404;
-            resResult.message = AppLanguage.t("app", "Connection error");
-            log.error("login ---> 80 :" + "Connection error");
-            res.json(resResult);
-            return false;
-        }
-        if (!result || !result.length) {
-            resResult.code = 0;
-            resResult.message = AppLanguage.t("app", "Invalid username or password");
-            log.error("login ---> 80" + "Invalid username or password" );
-            res.json(resResult);
-            return false;
-        }
-        var userModel = {
-            username : result[0].username,
-            user_id : result[0].gpoid,
-            email : result[0].email
-        };
-        var token = jwt.sign(userModel, config.superSecret, {
-            expiresIn: 86400 * 365
-        });
-        resResult.code = 0;
-        resResult.message = AppLanguage.t("app", "success");
-        resResult.user_id = result[0].gpoid;
-        resResult.token = token;
-        //cho nay can tra ve list task.
-        TaskModel.getAllTaskByUser(userModel.gpoid, connection, function(result){
-            if (result.code === 0){
-                resResult.data = result.data;
-                res.json(resResult);
-                return false;
-            }
-            else{
-                resResult.data = [];
-                res.json(resResult);
-                return false;
-            }
-        });
-    });
-}
+
 function handle_login(req, res) {
     req.getConnection(function (err, connection) {
         if (err) {
@@ -131,7 +42,7 @@ function handle_login(req, res) {
         var action = req.query.action;
         switch (action) {
             case 'login':
-                doLogin(req, res, connection);
+                UserController.doLogin(req, res, log);
                 break;
             default:
                 console.log('Do nothing');
@@ -187,7 +98,7 @@ apiRoutes.get('/getTask', function(req, res){
 });
 
 apiRoutes.post('/createTask', function(req, res){
-   TaskController.getTask(req, res);
+   TaskController.createTask(req, res, log);
 });
 
 apiRoutes.get('/updateTask', function(req, res){

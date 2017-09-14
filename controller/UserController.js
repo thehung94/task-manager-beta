@@ -193,4 +193,50 @@ UserController.register = function(req, res, log){
         }
     });
 };
+
+UserController.doLogin = function(req, res, log){
+    var resResult = { code : 0 , message : AppLanguage.t("app", "success")};
+    log.info("UserController -> doLogin : " + TextHelper.parramToString(req.query));
+    req.getConnection(function (err, connection) {
+        if (err) {
+            resResult.code = 404;
+            resResult.message = AppLanguage.t("app", "Connection error");
+            res.json(resResult);
+            log.error("UserController --> doLogin :" + "Database error");
+            return false;
+        }
+        var username = req.query.username;
+        var phone = req.query.phone;
+        var email = req.query.email;
+        var password = req.query.password;
+        if (!password || (!username && !phone && !email)){
+            resResult.code = 102;
+            resResult.message = AppLanguage.t("app", "Parameter is invalid");
+            log.error("UserController --> doLogin :" + "Parameter is invalid");
+            res.json(resResult);
+            return false;
+        }
+        var identifier = '';
+        var andQuery = '';
+        if (username) {
+            andQuery += ' username = ? ';
+            identifier = username;
+        } else if (phone) {
+            andQuery += ' phone_number = ? ';
+            identifier = phone;
+        } else if (email) {
+            andQuery += ' email = ? ';
+            identifier = email;
+        }
+        UserModel.doLogin(password, identifier, andQuery, connection, function(err, result){
+            if (err){
+                log.error("UserController --> doLogin : " + TextHelper.parramToString(err));
+                res.json(err);
+                return false;
+            }
+            res.json(result);
+        });
+    });
+    
+};
 module.exports = UserController;

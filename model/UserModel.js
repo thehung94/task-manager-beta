@@ -1,4 +1,11 @@
 var ArrayHelper = require('../util/helpers/ArrayHelper');
+var appLanguage = require('../messages/AppLanguage');
+var AppLanguage = new appLanguage();
+var async = require('async');
+var jwt = require('jsonwebtoken');
+var config = require('../config');
+var TaskModel = require('./TaskModel');
+var TextHelper = require('../util/helpers/TextHelper');
 var UserModel = function(data){
     if(data){
         this.setAttributes(data);
@@ -23,7 +30,7 @@ UserModel.prototype.getAttributes = function(){
         password: this.password,
         address: this.address,
         email: this.email,
-        phone_number: this.phone_number,
+        phone_number: this.phone_number
     };
 };
 
@@ -136,6 +143,80 @@ UserModel.activeUser = function(userName, active, connection, callback){
             };
             callback(resResult);
         }   
+    });
+};
+/**
+ * @api {get} cp.cam9.tv:3000/login 3.1 Authenticate user in mobile app
+ * @apiName doLogin
+ * @apiGroup CMS API
+ *
+ * @apiParam {String} action Type of action, fix value "login"
+ * @apiParam {String} password A SHA265 string from user's password
+ * @apiParam {String} email Email
+ * @apiParam {String} phone Phone number
+ * @apiParam {String} username Username
+ * @apiDescription Param email, phone and username are options, but have to one of them.
+ *
+ * @apiSuccess {String} success True
+ * @apiSuccess {String} message Enjoy your token!
+ * @apiSuccess {String} token Token generated for client
+ *
+ * @apiExample {get} Example request
+ * http://localhost:3000/login?action=login&password=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918&email=tungnd@vp9.tv
+ */
+UserModel.doLogin = function(password, identifier, andQuery, connection, callback) {
+    var selectQuery = 'SELECT * FROM users WHERE password = ? AND ' + andQuery;
+    var resResult = {
+        code : 0,
+        message : AppLanguage.t("app", "success")
+    };
+    async.waterfall([
+        function(callbackWf){
+            connection.query(selectQuery, [password, identifier], function (err, result) {
+                if (err) {
+                    resResult.code= 404;
+                    resResult.message = AppLanguage.t("app", "Connection error");
+                    callbackWf(resResult, null);
+                }
+                if (!result || !result.length) {
+                    resResult.code = 1000;
+                    resResult.message = AppLanguage.t("app", "Invalid username or password");
+                    callbackWf(resResult, null);
+                }
+                var userModel = {
+                    username : result[0].username,
+                    gpoid : result[0].gpoid,
+                    email : result[0].email
+                };
+                callbackWf(null, userModel);
+            });
+        },
+        function(userModel, callbackWf){
+            TaskModel.getAllTaskByUser(userModel.gpoid, connection, function(result){
+                if (result.code === 0){
+                    var list_task = result.data;
+                    callbackWf(null, userModel, list_task);
+                }
+                else{
+                    resResult.code = 1002;
+                    resResult.message = AppLanguage.t("app", "Get task error");
+                    callbackWf(resResult, null, null);
+                }
+            });
+        },
+        function(userModel, listTask, callbackWf){
+            var token = jwt.sign(userModel, config.superSecret, {
+                    expiresIn: 86400 * 365
+                });
+                resResult.code = 0;
+                resResult.message = AppLanguage.t("app", "success");
+                resResult.user = userModel;
+                resResult.token = token;
+                resResult.list_task = listTask;
+                callbackWf(null, resResult);
+        }
+    ], function(err, resultWf){
+        callback(err, resultWf);
     });
 };
 module.exports = UserModel;
