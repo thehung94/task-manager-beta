@@ -23,6 +23,8 @@ var UserController = require('./controller/UserController.js');
 var TaskController = require('./controller/TaskController');
 var ClassController = require('./controller/ClassController');
 var GroupController = require('./controller/GroupController');
+//models
+var TaskModel = require('./model/TaskModel');
 
 //enum
 var AppEnum = require('./util/AppEnums');
@@ -104,8 +106,19 @@ function doLogin(req, res, connection) {
         resResult.message = AppLanguage.t("app", "success");
         resResult.user_id = result[0].gpoid;
         resResult.token = token;
-        res.json(resResult);
-        return false;
+        //cho nay can tra ve list task.
+        TaskModel.getAllTaskByUser(userModel.gpoid, connection, function(result){
+            if (result.code === 0){
+                resResult.data = result.data;
+                res.json(resResult);
+                return false;
+            }
+            else{
+                resResult.data = [];
+                res.json(resResult);
+                return false;
+            }
+        });
     });
 }
 function handle_login(req, res) {

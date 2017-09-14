@@ -1,7 +1,7 @@
 var config = {};
 
 
-config.port = 3000; 
+config.port = 8080; 
 config.dbOptions = {
 
    "host": "localhost",

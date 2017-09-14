@@ -75,13 +75,14 @@ TaskModel.prototype.getOneByAttributes = function(attribute, value, connection, 
     });
 };
 TaskModel.getAllTaskByUser = function(userId, connection, callback){
-    var sqlQuery = " SELECT * FROM task t" +
-                " LEFT JOIN user2class u2c ON u2c.user_id = t.user_creator_id OR u2c.user_id = t.user_asigm_id " +
-                " LEFT JOIN user2group u2g ON u2g.user_id = t.user_creator_id OR u2g.user_id = t.user_asigm_id " +
+    var sqlQuery = " SELECT t.*,g.group_name, c.class_name  FROM task t" +
+                " INNER JOIN users u ON t.user_creator_id = u.gpoid OR t.user_assigned_id = u.gpoid " +
+                " LEFT JOIN user2class u2c ON u2c.user_id = t.user_creator_id OR u2c.user_id = t.user_assigned_id " +
+                " LEFT JOIN user2group u2g ON u2g.user_id = t.user_creator_id OR u2g.user_id = t.user_assigned_id  " +
                 " LEFT JOIN class c ON  u2c.class_id = c.id " +
-                " LEFT JOIN group g ON g.id = u2g.group_id " +
-                " WHERE user_id = ?";
-    connection.query(sqlQuery, [userId], function(err, connection){
+                " LEFT JOIN `group` g ON g.id = u2g.group_id "+
+                " WHERE u.gpoid = 2 ORDER BY c.class_name DESC , t.created_time";
+    connection.query(sqlQuery, [userId], function(err, result){
         if (err){
             callback({
                 code : 404,

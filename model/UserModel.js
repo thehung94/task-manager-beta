@@ -13,7 +13,6 @@ UserModel.prototype.setAttributes = function(data){
     this.address = data.address ? data.address : null;
     this.email = data.email ? data.email : null;
     this.phone_number = data.phone_number ? data.phone_number : null;
-    //this.facebook_id = data.facebook_id ? data.facebook_id : null;
 };
 
 UserModel.prototype.getAttributes = function(){
@@ -25,7 +24,6 @@ UserModel.prototype.getAttributes = function(){
         address: this.address,
         email: this.email,
         phone_number: this.phone_number,
-        //facebook_id : this.facebook_id,
     };
 };
 
@@ -51,6 +49,25 @@ UserModel.prototype.add = function(connection, log, callback){
         }
         self.gpoid = result.insertId;
         callback({code: 0, message: '', user: self});
+    });
+};
+UserModel.prototype.getOneByAttributes = function(attribute, value, connection, callback){
+    var sqlQuery = "SELECT * FROM users WHERE "
+                + attribute
+                + " = ? LIMIT 1";
+    connection.query(sqlQuery, [value], function(err, result){
+        if (err){
+            callback({
+                code : 404,
+                message : ''
+            });
+            return false;
+        }
+        callback({
+            code : 0,
+            message : '',
+            data : result
+        });
     });
 };
 
@@ -94,7 +111,7 @@ UserModel.prototype.checkIdFacebook = function(facebook_id , connection , log, c
         log.info("UserModel ==> checkIdFacebook :" + JSON.stringify(resResult));
     });
 };
-UserModel.activeUser = function(userName, active, connection, log, callback){
+UserModel.activeUser = function(userName, active, connection, callback){
     var queryUpdate = " UPDATE users SET  active = ? WHERE username = ?";
     var activeIndex= null;
     if (active === 'active') {
