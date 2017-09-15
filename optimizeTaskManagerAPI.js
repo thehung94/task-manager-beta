@@ -66,6 +66,7 @@ app.get("/login", apiLimiter, function (req, res) {
     -
         handle_login(req, res);
 });
+app.use('/cms_api', apiRoutes);
 app.post('/register', apiLimiter, function (req, res) {
     UserController.register(req, res, log);
 });

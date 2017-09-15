@@ -35,12 +35,12 @@ TaskModel.validate = function(data){
 };
 
 TaskModel.prototype.add = function(connection, callback){
-    var validate = this.validate(this.getAttributes());
-    if(validate.code){
-        callback(validate);
-        return false;
-    }
-    var sql = 'INSERT INTO task (task_name, task_content, user_creator_id, user_asigm_id, class_id, estimate_time, created_time, status) ' 
+//    var validate = TaskModel.validate(this.getAttributes());
+//    if(validate.code){
+//        callback(validate);
+//        return false;
+//    }
+    var sql = 'INSERT INTO task (task_name, task_content, user_creator_id, user_assigned_id, class_id, estimate_time, created_time, status) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
     var params = [this.task_name, this.task_content, this.user_creator_id, this.user_assigned_id, this.class_id, this.estimate_time, this.created_time, this.status];
