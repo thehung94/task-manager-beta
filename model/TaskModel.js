@@ -34,24 +34,32 @@ TaskModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-TaskModel.prototype.add = function(connection, callback){
-//    var validate = TaskModel.validate(this.getAttributes());
-//    if(validate.code){
-//        callback(validate);
-//        return false;
-//    }
-    var sql = 'INSERT INTO task (task_name, task_content, user_creator_id, user_assigned_id, class_id, estimate_time, created_time, status) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+TaskModel.prototype.save = function(connection, callback){
+    var params = [
+            this.task_name, this.task_content, this.user_creator_id, this.user_assigned_id, 
+            this.class_id, this.estimate_time, this.created_time, this.status
+        ];
+    if (this.id){
+        var sqlQuery = "UPDATES task"
+                    +" SET task_name = ?, task_content = ?, user_creator_id = ?, user_assigned_id = ?"
+                    +" class_id = ?, estimate_time = ?, status = ? WHERE id = ?";
+        params.push(this.id);
+    }
+    else{
+        var sqlQuery = "INSERT INTO task (task_name, task_content, user_creator_id, user_assigned_id, class_id, estimate_time, created_time, status) " 
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+    
     var self = this;
-    var params = [this.task_name, this.task_content, this.user_creator_id, this.user_assigned_id, this.class_id, this.estimate_time, this.created_time, this.status];
-    connection.query(sql, params, function(err, result){
+    
+    connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;
         }
         self.id = result.insertId;
-        callback({code: 0, message: '', task: self});
+        callback({code: 0, task: self});
     });
 };
 
