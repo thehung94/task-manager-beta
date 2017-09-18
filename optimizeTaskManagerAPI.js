@@ -35,18 +35,23 @@ app.use(myConnection(mysql, config.dbOptions, 'pool'));
 function handle_login(req, res) {
     req.getConnection(function (err, connection) {
         if (err) {
-            res.json({ "code": 100, "status": "Database error " + err });
+            res.json({
+                code: 404, 
+                status: "Database connection error"
+            });
             return;
         }
         console.log('connected as id ' + connection.threadId);
         var action = req.query.action;
         switch (action) {
             case 'login':
-                UserController.doLogin(req, res, log);
+            UserController.doLogin(req, res, log);
                 break;
             default:
-                console.log('Do nothing');
-                res.json({ "code": 102, "status": "Invalid param action" });
+            res.json({
+                code: 102,
+                status: "Invalid param action"
+            });
         }
     });
 }
@@ -66,13 +71,13 @@ app.get("/login", apiLimiter, function (req, res) {
     -
         handle_login(req, res);
 });
-app.use('/cms_api', apiRoutes);
 app.post('/register', apiLimiter, function (req, res) {
     UserController.register(req, res, log);
 });
-// ---------------------------------------------------------
-// route middleware to authenticate and check token
-// ---------------------------------------------------------
+/* ---------------------------------------------------------*/
+/*-----route middleware to authenticate and check token-----*/
+/*----------------------------------------------------------*/
+app.use('/cms_api', apiRoutes);
 apiRoutes.use(function (req, res, next) {
     var token = req.param('token');
     if (token) {
@@ -95,7 +100,7 @@ apiRoutes.use(function (req, res, next) {
 });
 
 apiRoutes.get('/getTask', function(req, res){
-   TaskController.getTask(req, res);
+   TaskController.getTaskByUser(req, res, log);
 });
 
 apiRoutes.post('/createTask', function(req, res){
