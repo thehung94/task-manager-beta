@@ -58,7 +58,7 @@ TaskModel.prototype.save = function(connection, callback){
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;
         }
-        self.id = result.insertId;
+        self.id = result.insertId ? result.insertId : this.id;
         callback({code: 0, task: self});
     });
 };

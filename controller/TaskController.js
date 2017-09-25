@@ -117,7 +117,6 @@ TaskController.getTaskByUser = function(req, res, log){
                     return false;
                 }
                 userModel.getOneByAttributes('gpoid', userId, connection, function(result){
-                    console.log(result.data[0].active)
                     if (result.code === 0 && parseInt(result.data[0].active) === 1){
                         TaskModel.getAllTaskByUser(userId, connection, function(result){
                             if (result.code === 0){

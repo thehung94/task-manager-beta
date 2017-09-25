@@ -34,23 +34,38 @@ TaskModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-TaskModel.prototype.add = function(connection, log, callback){
+TaskModel.prototype.save = function(connection, callback){
+    var validate = UserModel.validate(this.getAttributes());
+    var sqlQuery ='';
     var validate = this.validate(this.getAttributes());
+    var params = [
+        this.group_name, this.class_id, this.description, this.type,
+        this.max_user, this.created_time, this.created_time, this.status
+    ];
+    if (this.id) {
+        sqlQuery = "UPDATES group"
+                +" SET group_name = ?, class_id = ?, description = ?, type = ?, max_user = ?"
+                +" user_create = ?, status = ? WHERE id = ?";
+        params.push(this.gpoid);
+    }
     if(validate.code){
         callback(validate);
         return false;
     }
-    var sql = 'INSERT INTO task (group_name, class_id, description, type, max_user, created_time, user_create, status) ' 
+    if(validate.code){
+        callback(validate);
+        return false;
+    }
+    sqlQuery = 'INSERT INTO group (group_name, class_id, description, type, max_user, created_time, user_create, status) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
-    var params = [this.group_name, this.class_id, this.description, this.type, this.max_user, this.created_time, this.created_time, this.status];
-    connection.query(sql, params, function(err, result){
+    connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;
         }
-        self.id = result.insertId;
+        self.id = result.insertId ? result.insertId : this.id;
         callback({code: 0, message: '', taks: self});
     });
 };

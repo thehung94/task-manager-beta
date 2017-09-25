@@ -38,23 +38,33 @@ UserModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-UserModel.prototype.add = function(connection, log, callback){
+UserModel.prototype.save = function(connection, callback){
     var validate = UserModel.validate(this.getAttributes());
+    var sqlQuery ='';
+    var params = [
+        this.username, this.fullname, this.password, this.address, this.email, this.phone_number
+    ];
+    if (this.gpoid) {
+        sqlQuery = "UPDATES users"
+                +" SET username = ?, fullname = ?, password = ?, address = ?, email = ?"
+                +" phone_number = ? WHERE gpoid = ?";
+        params.push(this.gpoid);
+    }
     if(validate.code){
         callback(validate);
         return false;
     }
-    var sql = 'INSERT INTO users (username, fullname, password, address, email, phone_number) ' 
+    sqlQuery = 'INSERT INTO users (username, fullname, password, address, email, phone_number) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?)';
     var self = this;
     var params = [this.username, this.fullname, this.password, this.address, this.email, this.phone_number];
-    connection.query(sql, params, function(err, result){
+    connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);
             callback({code : 102 , message :'Error when excute SQL Query' });
             return false;
         }
-        self.gpoid = result.insertId;
+        self.gpoid = result.insertId ? result.insertId : this.gpoid;
         callback({code: 0, message: '', user: self});
     });
 };

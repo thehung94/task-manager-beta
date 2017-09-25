@@ -34,17 +34,28 @@ TaskModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-TaskModel.prototype.add = function(connection, log, callback){
+TaskModel.prototype.save = function(connection, callback){
     var validate = this.validate(this.getAttributes());
     if(validate.code){
         callback(validate);
         return false;
     }
-    var sql = 'INSERT INTO task (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status) ' 
+    var sqlQuery ='';
+    var params = [
+        this.class_name, this.descriptions, this.max_participant,
+        this.type, this.start_time, this.end_time, this.created_time, this.status
+    ];
+    if (this.id) {
+        sqlQuery = "UPDATES class"
+                +" SET class_name = ?, descriptions = ?, max_participant = ?, type = ?, start_time = ?"
+                +" end_time = ?, status = ? WHERE gpoid = ?";
+        params.push(this.id);
+    }
+    sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
     var params = [this.class_name, this.descriptions, this.max_participant, this.type, this.start_time, this.end_time, this.created_time, this.status];
-    connection.query(sql, params, function(err, result){
+    connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);
             callback({code : 102 , message :'Error when excute SQL Query' });

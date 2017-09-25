@@ -171,7 +171,7 @@ UserController.register = function(req, res, log){
             }
             var userModel = new UserModel(req.body);
             userModel.password = crypto(req.body.password);
-            userModel.add(connection, log, function(result){
+            userModel.save(connection, function(result){
                 if (result.code === 0){
                     resResult.user = result.user;
                     res.json(resResult);
