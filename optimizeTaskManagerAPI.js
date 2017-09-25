@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var app = express();
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 require('events').EventEmitter.prototype._maxListeners = 100;
-var config = require('./config.js');
+var config = require('./config/config.js');
 app.set('superSecret', config.superSecret); // secret variable
 var async = require("async");
 var bodyParser = require('body-parser');

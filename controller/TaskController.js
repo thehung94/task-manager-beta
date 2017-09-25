@@ -5,7 +5,7 @@ var UserModel = require('../model/UserModel');
 var AppLanguage = new appLanguage();
 var TextHelper = require('../util/helpers/TextHelper');
 var jwt = require('jsonwebtoken');
-var config = require('../config.js');
+var config = require('../config/config.js');
 TaskController.createTask = function(req, res, log){
     var resResult = {code : 0, status: "OK", message: AppLanguage.t("app", "success")};
     log.info("TaskController --> createTask :" + TextHelper.parramToString(req.bpdy));
