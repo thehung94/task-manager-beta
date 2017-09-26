@@ -1,10 +1,10 @@
-var ClassModel = function(data){
+var User2GroupModel = function(data){
     if(data){
         this.setAttributes(data);
     }
 };
 
-ClassModel.prototype.setAttributes = function(data){
+User2GroupModel.prototype.setAttributes = function(data){
     this.id = data.id ? data.id : null;
     this.class_name = data.class_name ? data.class_name : null;
     this.descriptions = data.descriptions ? data.descriptions : null;
@@ -16,7 +16,7 @@ ClassModel.prototype.setAttributes = function(data){
     this.status = data.status ? data.status : null;
 };
 
-ClassModel.prototype.getAttributes = function(){
+User2GroupModel.prototype.getAttributes = function(){
     return {
         id: this.id,
         class_name: this.class_name   ,
@@ -30,12 +30,12 @@ ClassModel.prototype.getAttributes = function(){
     };
 };
 
-ClassModel.validate = function(data){
+User2GroupModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-ClassModel.prototype.save = function(connection, callback){
-    var validate = ClassModel.validate(this.getAttributes());
+User2GroupModel.prototype.save = function(connection, callback){
+    var validate = this.validate(this.getAttributes());
     if(validate.code){
         callback(validate);
         return false;
@@ -48,12 +48,13 @@ ClassModel.prototype.save = function(connection, callback){
     if (this.id) {
         sqlQuery = "UPDATES class"
                 +" SET class_name = ?, descriptions = ?, max_participant = ?, type = ?, start_time = ?"
-                +" end_time = ?, status = ?, created_time= ? WHERE id = ?";
+                +" end_time = ?, status = ? WHERE gpoid = ?";
         params.push(this.id);
     }
     sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status) ' 
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
+    var params = [this.class_name, this.descriptions, this.max_participant, this.type, this.start_time, this.end_time, this.created_time, this.status];
     connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);
@@ -61,11 +62,11 @@ ClassModel.prototype.save = function(connection, callback){
             return false;
         }
         self.id = result.insertId;
-        callback({code: 0, message: '', thisClass: self});
+        callback({code: 0, message: '', Class: self});
     });
 };
 
-ClassModel.prototype.getOneByAttributes = function(attribute, value, connection, callback){
+User2GroupModel.prototype.getOneByAttributes = function(attribute, value, connection, callback){
     var sqlQuery = "SELECT * FROM task WHERE "
                 + attribute
                 + " = ? LIMIT 1";
@@ -85,13 +86,4 @@ ClassModel.prototype.getOneByAttributes = function(attribute, value, connection,
     });
 };
 
-ClassModel.checkExistedClass = function(className, userId, connection, callback){
-    var sqlQuery = "SELECT COUNT(c.id) number_count FROM class c " +
-                " INNER JOIN user2class u2c ON u2c.class_id = c.id" +
-                " WHERE c.class_name = ? AND u2c.user_id = ?";
-    connection.query(sqlQuery, [className, userId], function(err, result){
-        callback(err, result);
-    });    
-};
-
-module.exports = ClassModel;
+module.exports = User2GroupModel;

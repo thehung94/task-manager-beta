@@ -119,8 +119,8 @@ apiRoutes.get('/getClass', function(req, res){
    ClassController.getClass(req, res);
 });
 
-apiRoutes.get('/createClass', function(req, res){
-   ClassController.getClass(req, res);
+apiRoutes.post('/createClass', function(req, res){
+   ClassController.createClass(req, res, log);
 });
 
 apiRoutes.get('/updateTask', function(req, res){
