@@ -1,4 +1,4 @@
-var config = require('../config');
+var config = require('../config/config');
 var AppLanguage = function(){
     if(typeof config.laguage === "undefined" || !config.language){
         this.language = "vi";
