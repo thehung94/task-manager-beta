@@ -10,6 +10,15 @@ User2ClassModel.prototype.setAttributes = function(data){
     this.class_id = data.class_id ? data.class_id : null;
     this.created_time = data.created_time ? data.created_time : null;
     this.status = data.end_time ? data.status : null;
+    this.role_view = data.role_view ? data.role_view : null;
+    this.role_edit = data.role_edit ? data.role_edit : null;
+    this.role_create = data.role_create ? data.role_create : null;
+    this.role_comment = data.role_comment ? data.role_comment : null;
+    this.role_adduser = data.role_adduser ? data.role_adduser : null;
+    this.role_deluser = data.role_deluser ? data.role_deluser : null;
+    this.role_breaktask = data.role_breaktask ? data.role_breaktask : null;
+    this.role_close = data.role_close ? data.role_close : null;
+    this.role_block = data.role_block ? data.role_block : null;
 };
 
 User2ClassModel.prototype.getAttributes = function(){
@@ -18,7 +27,16 @@ User2ClassModel.prototype.getAttributes = function(){
         user_id: this.user_id   ,
         class_id: this.class_id,
         created_time: this.created_time,
-        status: this.status
+        status: this.status,
+        role_view: this.role_view,
+        role_edit: this.role_edit,
+        role_create: this.role_create,
+        role_comment: this.role_comment,
+        role_adduser: this.role_adduser,
+        role_deluser: this.role_deluser,
+        role_breaktask: this.role_breaktask,
+        role_close: this.role_close,
+        role_block: this.role_block
     };
 };
 

@@ -14,6 +14,7 @@ ClassModel.prototype.setAttributes = function(data){
     this.created_time = data.created_time ? data.created_time : null;
     this.end_time = data.end_time ? data.end_time : null;
     this.status = data.status ? data.status : null;
+    this.max_group = data.max_group ? data.max_group : null;
 };
 
 ClassModel.prototype.getAttributes = function(){
@@ -26,7 +27,8 @@ ClassModel.prototype.getAttributes = function(){
         start_time: this.start_time,
         created_time: this.created_time,
         end_time: this.end_time,
-        status: this.status
+        status: this.status,
+        max_group: this.max_group
     };
 };
 
@@ -48,11 +50,11 @@ ClassModel.prototype.save = function(connection, callback){
     if (this.id) {
         sqlQuery = "UPDATES class"
                 +" SET class_name = ?, descriptions = ?, max_participant = ?, type = ?, start_time = ?"
-                +" end_time = ?, status = ?, created_time= ? WHERE id = ?";
+                +" end_time = ?, status = ?, created_time= ?, max_group= ? WHERE id = ?";
         params.push(this.id);
     }
-    sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status, max_group) ' 
+            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
     connection.query(sqlQuery, params, function(err, result){
         if(err){
