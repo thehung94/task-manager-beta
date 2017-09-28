@@ -35,18 +35,19 @@ TaskModel.validate = function(data){
 };
 
 TaskModel.prototype.save = function(connection, callback){
+    var sqlQuery = '';
     var params = [
             this.task_name, this.task_content, this.user_creator_id, this.user_assigned_id, 
             this.class_id, this.estimate_time, this.created_time, this.status
         ];
     if (this.id){
-        var sqlQuery = "UPDATES task"
+        sqlQuery = "UPDATES task"
                     +" SET task_name = ?, task_content = ?, user_creator_id = ?, user_assigned_id = ?"
                     +" class_id = ?, estimate_time = ?, status = ? WHERE id = ?";
         params.push(this.id);
     }
     else{
-        var sqlQuery = "INSERT INTO task (task_name, task_content, user_creator_id, user_assigned_id, class_id, estimate_time, created_time, status) " 
+        sqlQuery = "INSERT INTO task (task_name, task_content, user_creator_id, user_assigned_id, class_id, estimate_time, created_time, status) " 
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     }
     

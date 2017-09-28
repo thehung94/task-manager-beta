@@ -2,7 +2,6 @@ var ClassController = {};
 var appLanguage = require('../messages/AppLanguage');
 var AppLanguage = new appLanguage();
 var ClassModel = require('../model/ClassModel');
-var jwt = require('jsonwebtoken');
 var async = require('async');
 var User2Class = require('../model/User2ClassModel');
 ClassController.createClass = function(req, res, log){

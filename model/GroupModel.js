@@ -1,10 +1,10 @@
-var TaskModel = function(data){
+var GroupModel = function(data){
     if(data){
         this.setAttributes(data);
     }
 };
 
-TaskModel.prototype.setAttributes = function(data){
+GroupModel.prototype.setAttributes = function(data){
     this.id = data.id ? data.id : null;
     this.group_name = data.group_name ? data.group_name : null;
     this.class_id = data.class_id ? data.class_id : null;
@@ -16,7 +16,7 @@ TaskModel.prototype.setAttributes = function(data){
     this.status = data.status ? data.status : null;
 };
 
-TaskModel.prototype.getAttributes = function(){
+GroupModel.prototype.getAttributes = function(){
     return {
         id: this.id,
         group_name: this.group_name   ,
@@ -30,14 +30,12 @@ TaskModel.prototype.getAttributes = function(){
     };
 };
 
-TaskModel.validate = function(data){
+GroupModel.validate = function(data){
     return {code: 0, message: ''};
 };
 
-TaskModel.prototype.save = function(connection, callback){
-    var validate = UserModel.validate(this.getAttributes());
+GroupModel.prototype.save = function(connection, callback){
     var sqlQuery ='';
-    var validate = this.validate(this.getAttributes());
     var params = [
         this.group_name, this.class_id, this.description, this.type,
         this.max_user, this.created_time, this.created_time, this.status
@@ -48,16 +46,10 @@ TaskModel.prototype.save = function(connection, callback){
                 +" user_create = ?, status = ? WHERE id = ?";
         params.push(this.gpoid);
     }
-    if(validate.code){
-        callback(validate);
-        return false;
+    else{
+        sqlQuery = 'INSERT INTO group (group_name, class_id, description, type, max_user, created_time, user_create, status) ' 
+                + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     }
-    if(validate.code){
-        callback(validate);
-        return false;
-    }
-    sqlQuery = 'INSERT INTO group (group_name, class_id, description, type, max_user, created_time, user_create, status) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     var self = this;
     connection.query(sqlQuery, params, function(err, result){
         if(err){
@@ -70,7 +62,7 @@ TaskModel.prototype.save = function(connection, callback){
     });
 };
 
-TaskModel.prototype.getOneByAttributes = function(attribute, value, connection, callback){
+GroupModel.prototype.getOneByAttributes = function(attribute, value, connection, callback){
     var sqlQuery = "SELECT * FROM task WHERE "
                 + attribute
                 + " = ? LIMIT 1";
@@ -90,4 +82,13 @@ TaskModel.prototype.getOneByAttributes = function(attribute, value, connection, 
     });
 };
 
-module.exports = TaskModel;
+GroupModel.checkExistedClass = function(className, userId, connection, callback){
+    var sqlQuery = "SELECT COUNT(c.id) number_count FROM class c " +
+                " INNER JOIN user2class u2c ON u2c.class_id = c.id" +
+                " WHERE c.class_name = ? AND u2c.user_id = ?";
+    connection.query(sqlQuery, [className, userId], function(err, result){
+        callback(err, result);
+    });    
+};
+
+module.exports = GroupModel;

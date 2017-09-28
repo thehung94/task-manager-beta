@@ -14,7 +14,6 @@ User2GroupModel.prototype.setAttributes = function(data){
     this.group_id = data.group_id ? data.group_id : null;
     this.status = data.status ? data.status : null;
     this.join_time = data.join_time ? data.join_time : null;
-    this.user_creator_id = data.user_creator_id ? data.user_creator_id : null;
     this.role_view = data.role_view ? data.role_view : null;
     this.role_edit = data.role_edit ? data.role_edit : null;
     this.role_create = data.role_create ? data.role_create : null;
@@ -58,20 +57,22 @@ User2GroupModel.prototype.save = function(connection, callback){
     }
     var sqlQuery ='';
     var params = [
-        this.user_id, this.group_id, this.status, this.join_time, this.user_creator_id, this.role_view, this.role_edit,
+        this.user_id, this.group_id, this.status, this.join_time, this.role_view, this.role_edit,
         this.role_create, this.role_comment, this.role_adduser, this.role_deluser, this.role_breaktask, this.role_close, this.role_block
     ];
     if (this.id) {
         sqlQuery = "UPDATES user2group"
-                +" SET user_id = ?, group_id = ?, status = ?, join_time = ?, user_creator_id = ?, role_view= ?, role_edit= ?, role_create= ?, "
+                +" SET user_id = ?, group_id = ?, status = ?, join_time = ?, role_view= ?, role_edit= ?, role_create= ?, "
                 +" role_comment= ?, role_adduser= ?, role_deluser= ?, role_breaktask= ?, role_close= ?, role_block= ? WHERE gpoid = ?";
         params.push(this.id);
     }
-    sqlQuery = "INSERT INTO user2group (user_id, group_id, status, join_time, user_creator_id, role_view, role_edit, role_create,"
-            + " role_comment, role_adduser, role_deluser, role_breaktask, role_close, role_block)"
-            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    else{
+        sqlQuery = "INSERT INTO user2group (user_id, group_id, status, join_time, role_view, role_edit, role_create,"
+                + " role_comment, role_adduser, role_deluser, role_breaktask, role_close, role_block)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+    
     var self = this;
-    var params = [this.class_name, this.descriptions, this.max_participant, this.type, this.start_time, this.end_time, this.created_time, this.status];
     connection.query(sqlQuery, params, function(err, result){
         if(err){
             console.log(err);

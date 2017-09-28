@@ -53,8 +53,10 @@ ClassModel.prototype.save = function(connection, callback){
                 +" end_time = ?, status = ?, created_time= ?, max_group= ? WHERE id = ?";
         params.push(this.id);
     }
-    sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status, max_group) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    else{
+        sqlQuery = 'INSERT INTO class (class_name, descriptions, max_participant, type, start_time, end_time, created_time, status, max_group) ' 
+                + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    }
     var self = this;
     connection.query(sqlQuery, params, function(err, result){
         if(err){

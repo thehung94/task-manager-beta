@@ -54,8 +54,10 @@ UserModel.prototype.save = function(connection, callback){
         callback(validate);
         return false;
     }
-    sqlQuery = 'INSERT INTO users (username, fullname, password, address, email, phone_number) ' 
-            + 'VALUES (?, ?, ?, ?, ?, ?)';
+    else{
+        sqlQuery = 'INSERT INTO users (username, fullname, password, address, email, phone_number) ' 
+                + 'VALUES (?, ?, ?, ?, ?, ?)';
+    }
     var self = this;
     var params = [this.username, this.fullname, this.password, this.address, this.email, this.phone_number];
     connection.query(sqlQuery, params, function(err, result){
