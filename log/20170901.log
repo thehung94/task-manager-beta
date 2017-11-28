@@ -1,0 +1,2 @@
+00:27:56 [::1][login][error] login ---> 80Invalid username or password
+00:28:48 [::1][login][error] doLogin --> 63 : Parameters are invalid

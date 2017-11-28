@@ -1,0 +1,2 @@
+23:40:56 [::1][register][info] UserController --> register :object: {"username":"admin","password":"hunghoa9403","email":"hungvt@vp9.vn","address":"72 Tran Dang Ninh","phone":"01668558148"}
+23:41:23 [::1][login][error] {"code":101,"status":"Invalid username or password"}

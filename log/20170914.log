@@ -1,0 +1,9 @@
+15:26:27 [::1][login][error] UserController --> doLogin :Parameter is invalid
+15:32:27 [::1][login][info] UserController -> doLogin : [object Object]
+15:33:32 [::1][login][info] UserController -> doLogin : object: {"action":"login","username":"admin","password":"cb8a24260684b6c091e1cc25930260474f62b5bae8461a4c73a7c2cf0b70a7f9"}
+22:39:50 [::1][createTask][info] TaskController --> createTask :undefined data
+22:40:40 [::1][createTask][info] TaskController --> createTask :undefined data
+22:46:27 [::1][createTask][info] TaskController --> createTask :undefined data
+22:46:27 [::1][createTask][error] TaskController --> createTask --> 56 :Connection error
+22:47:55 [::1][createTask][info] TaskController --> createTask :undefined data
+23:03:23 [::1][createTask][info] TaskController --> createTask :undefined data
